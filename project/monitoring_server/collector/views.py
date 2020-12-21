@@ -91,7 +91,7 @@ def logs(request: HttpRequest):
         logs = ServerLogs(server=server, **data)
         logs.save()
         notification_type = None
-        if 200 <= logs.status_code <= 299:
+        if not 200 <= logs.status_code <= 299:
             notification_type = 'Ответ от сервера не успешный'
             # Notification(reason='ST', server=server).save()
         if logs.duration > 20:
