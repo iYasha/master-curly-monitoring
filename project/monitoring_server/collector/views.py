@@ -49,7 +49,7 @@ def stats(request: HttpRequest):
         message = None
         disk_percentage = round((disk.used / disk.total) * 100, 2)
         ram_percentage = round((ram.used / ram.total) * 100, 2)
-        if disk_percentage > 3:
+        if disk_percentage > 90:
             message = f'📶 <b>Статус</b>: Важно\n\n' \
                       f'💻 <b>Сервер</b>: {server.name}\n\n' \
                       f'🆔 <b>IP</b>: {server.ip}\n\n' \
