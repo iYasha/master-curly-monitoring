@@ -178,4 +178,4 @@ class ServerLogs(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.server} | {self.url} | {self.status_code}'
+        return f'{self.server.name} | {self.endpoint} | {self.status_code}'
