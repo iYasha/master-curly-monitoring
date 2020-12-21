@@ -1,0 +1,36 @@
+version: '3'
+services:
+  master_monitoring_server:
+    container_name: master_monitoring_server
+    build: .
+    ports:
+      - "4575:8000"
+    volumes:
+      - ./project:/code
+    env_file:
+      - ./.docker.env
+    links:
+      - postgres_master_db
+    restart: on-failure
+    networks:
+      monitor_network:
+        aliases:
+          - master_monitoring_server.monitor_network
+
+  postgres_master_db:
+    image: postgres
+    container_name: postgres_master_db
+    volumes:
+      - ./postgresql:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/1-init.sql
+    env_file:
+      - ./.docker.env
+    networks:
+      monitor_network:
+        aliases:
+          - postgres_master_db.monitor_network
+
+networks:
+  monitor_network:
+    external:
+      name: monitor_network
