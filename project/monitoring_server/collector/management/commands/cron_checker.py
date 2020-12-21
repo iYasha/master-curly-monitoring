@@ -27,6 +27,7 @@ class Command(BaseCommand):
                 continue
             last_request = last_request[0]
             next_cron = get_next_cron(server.cron_expression, last_request.created_at).strftime('%Y-%m-%d %H:%M')
+            next_cron += timedelta(minutes=2)
             next_cron = datetime.strptime(next_cron, '%Y-%m-%d %H:%M')
             if next_cron < now and (server.token is not None and server.chat_ids is not None):
                 bot = telebot.TeleBot(server.token)
