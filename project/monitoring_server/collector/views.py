@@ -91,7 +91,7 @@ def logs(request: HttpRequest):
         logs = ServerLogs(server=server, **data)
         logs.save()
         notification_type = None
-        if not 200 <= logs.status_code <= 299:
+        if not 200 <= int(logs.status_code) <= 299:
             notification_type = 'Ответ от сервера не успешный'
             # Notification(reason='ST', server=server).save()
         if logs.duration > 20:
@@ -99,22 +99,23 @@ def logs(request: HttpRequest):
             # Notification(reason='SH', server=server).save()
         if all([notification_type, server.token, server.chat_ids]):
             bot = telebot.TeleBot(server.token)
+            request_body = pretty_json(logs.request_body).strip()
+            request_body = 'Нет' if len(request_body) == 0 else request_body
             for chat_id in server.chat_ids:
                 bot.send_message(
                     chat_id=chat_id[0],
-                    text=f'📶 <b>Статус</b>: Информация\n\n'
-                         f'💻 <b>Сервер</b>: {server.name}\n\n'
-                         f'🆔 <b>IP</b>: {server.ip}\n\n'
-                         f'📭 <b>Тип уведомления</b>: {notification_type}\n\n'
-                         f'📭 <b>Ссылка</b>: \n{logs.url}\n\n'
-                         f'📭 <b>Код ответа</b>: {logs.status_code}\n\n'
-                         f'📭 <b>Endpoint</b>: {logs.endpoint}\n\n'
-                         f'📭 <b>Время ответа</b>: {logs.duration}\n\n'
-                         f'📭 <b>Время отправки запроса</b>: {logs.created_at}\n\n'
-                         f'📭 <b>Тело запроса</b>: \n<code>{pretty_json(logs.request_body)}</code>\n\n'
-                         f'📭 <b>Ответ</b>: \n<code>{pretty_json(logs.response_body)}</code>\n\n'
-                         f'📭 <b>Код ответа</b>: {logs.status_code}\n\n',
-                    parse_mode='html'
+                    text=f'📶 *Статус*: Информация\n\n'
+                         f'💻 *Сервер*: {server.name}\n\n'
+                         f'🆔 *IP*: {server.ip}\n\n'
+                         f'📭 *Тип уведомления*: {notification_type}\n\n'
+                         f'🔑 *Ссылка*: {logs.url}\n\n'
+                         f'🚪 *Endpoint*: {logs.endpoint}\n\n'
+                         f'⏳ *Время ответа*: {logs.duration}s\n\n'
+                         f'🕒 *Время отправки запроса*: {logs.created_at.strftime("%d-%m-%Y %H:%M")}\n\n'
+                         f'📦 *Тело запроса*: \n`{request_body}`\n\n'
+                         f'📧 *Ответ*: \n`{pretty_json(logs.response_body)}`\n\n'
+                         f'🧾 *Код ответа*: {logs.status_code}\n\n',
+                    parse_mode='markdown'
                 )
         return HttpResponse(json.dumps({
             'success': True
