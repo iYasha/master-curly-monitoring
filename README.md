@@ -56,7 +56,7 @@ docker-compose exec master_monitoring_server python manage.py createsuperuser
 ```
 Set the following command to execute in the crontab
 ```
-echo * * * * * docker exec master_monitoring_server python manage.py cron_checker >> /etc/crontab
+echo "* * * * * docker exec master_monitoring_server python manage.py cron_checker" >> /etc/crontab
 ```
 
 ## Versioning
